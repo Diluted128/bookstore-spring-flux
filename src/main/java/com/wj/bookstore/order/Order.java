@@ -1,4 +1,4 @@
-package com.wj.bookstore.cart;
+package com.wj.bookstore.order;
 
 import com.wj.bookstore.book.BookEntity;
 import lombok.AllArgsConstructor;
