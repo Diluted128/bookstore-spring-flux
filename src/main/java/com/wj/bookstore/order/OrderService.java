@@ -3,6 +3,7 @@ package com.wj.bookstore.order;
 import com.wj.bookstore.cart.CartManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,18 +23,18 @@ public class OrderService {
         this.cartManager = cartManager;
     }
 
-    public ResponseEntity<Flux<Order>> getAllOrders(){
-        Flux<Order> orders = orderRepository.findAll();
+    public ResponseEntity<Flux<Order>> getAllOrders(Authentication authentication){
+        Flux<Order> orders = orderRepository.findOrderByUsername(authentication.getName());
         return ResponseEntity.accepted().body(orders);
     }
 
-    public Mono<ResponseEntity<Order>> getOrderById(String orderId) {
-        return orderRepository.findById(orderId)
+    public Mono<ResponseEntity<Order>> getOrderById(String orderId, Authentication authentication) {
+        return orderRepository.findOrdersByUsernameAndOrderId(authentication.getName(), orderId)
                 .flatMap(order -> Mono.just(ResponseEntity.ok(order)))
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
-    public Mono<ResponseEntity<String>> placeOrder() {
+    public Mono<ResponseEntity<String>> placeOrder(Authentication authentication) {
         return Mono.defer(() -> {
             if (cartManager.getItems().isEmpty()) {
                 return Mono.just(ResponseEntity.badRequest().body("Shopping cart is empty"));
@@ -41,6 +42,7 @@ public class OrderService {
 
             Order order = new Order(
                     null,
+                    authentication.getName(),
                     cartManager.getItems(),
                     LocalDate.now()
             );

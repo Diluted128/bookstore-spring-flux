@@ -17,6 +17,7 @@ import java.util.List;
 public class Order {
     @Id
     private String orderId;
+    private String username;
     private List<BookEntity> books;
     private LocalDate orderDate;
 }

@@ -1,6 +1,7 @@
 package com.wj.bookstore.order;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,17 +19,17 @@ public class OrderController {
     }
 
     @GetMapping("/orders/{orderId}")
-    public Mono<ResponseEntity<Order>> getOrderByID(@PathVariable String orderId){
-        return orderService.getOrderById(orderId);
+    public Mono<ResponseEntity<Order>> getOrderByID(@PathVariable String orderId, Authentication authentication){
+        return orderService.getOrderById(orderId, authentication);
     }
 
     @GetMapping("/orders")
-    public ResponseEntity<Flux<Order>> getAllOrders(){
-        return orderService.getAllOrders();
+    public ResponseEntity<Flux<Order>> getAllOrders(Authentication authentication){
+        return orderService.getAllOrders(authentication);
     }
 
     @PostMapping("/orders")
-    public Mono<ResponseEntity<String>> placeAnOrder(){
-        return orderService.placeOrder();
+    public Mono<ResponseEntity<String>> placeAnOrder(Authentication authentication){
+        return orderService.placeOrder(authentication);
     }
 }
